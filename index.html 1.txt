@@ -43,7 +43,7 @@
         <div id="risultato"></div>
         <div id="numeroGrande" class="numeri" style="display:none;"></div>
 
-        <p class="small" style="margin-top:30px;">Sei l'organizzatore? <a href="javascript:mostraAdmin()">Clicca qui per vedere tutte le prenotazioni</a></p>
+        <p class="small" style="margin-top:30px;">Sei l'organizzatore? <a href="#" onclick="mostraAdmin(); return false;">Clicca qui per vedere tutte le prenotazioni</a></p>
     </div>
 
     <div class="card admin" id="adminSection">
@@ -118,3 +118,4 @@
 </script>
 </body>
 </html>
+
