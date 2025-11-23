@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuardaroBa Prenotato – Mai più guarda roba!</title>
-    <meta name="description" content="Prenota il tuo numero guardaroba online">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto&display=swap');
         body {margin:0;font-family:'Roboto',sans-serif;background:linear-gradient(135deg,#1a0033,#000);color:#fff;text-align:center;min-height:100vh;display:flex;flex-direction:column;}
@@ -15,6 +14,7 @@
         .card{background:rgba(255,255,255,0.1);border-radius:20px;padding:40px 30px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.6);}
         input,button{padding:15px;margin:10px;font-size:1.2rem;border:none;border-radius:50px;}
         input{width:80%;background:rgba(255,255,255,0.2);color:white;}
+        input::placeholder{color:#ddd;}
         button{background:#ff00aa;color:white;cursor:pointer;font-weight:bold;transition:0.3s;}
         button:hover{background:#ff55cc;transform:scale(1.05);}
         .numeri{font-size:6rem;font-weight:800;letter-spacing:10px;color:#ff00aa;margin:20px 0;}
@@ -31,47 +31,40 @@
 
 <header>
     <h1>Guardaro<span>Ba</span> Prenotato</h1>
-    <p class="subtitle">Prenota il tuo numero e vai dritto a ballare!</p>
+    <p style="font-size:1.4rem;">Prenota il tuo numero e vai dritto a ballare!</p>
 </header>
 
 <div class="container">
-
-    <!-- SEZIONE PUBBLICA -->
     <div class="card" id="pubblica">
-        <p>Inserisci nome/nickname e prenota il tuo numero</p>
-        <input type="text" id="nome" placeholder="es. Fra99, La Robi, Ciccio...">
-        <br>
+        <p>Inserisci nome/nickname</p>
+        <input type="text" id="nome" placeholder="es. Fra99, La Robi, Ciccio..."><br>
         <button onclick="prenota()">PRENOTA IL NUMERO</button>
 
         <div id="risultato"></div>
         <div id="numeroGrande" class="numeri" style="display:none;"></div>
 
-        <p class="small">Vuoi vedere chi ha già prenotato? <a href="#admin" onclick="mostraAdmin()">Clicca qui (solo organizzatori)</a></p>
+        <p class="small" style="margin-top:30px;">Sei l'organizzatore? <a href="javascript:mostraAdmin()">Clicca qui per vedere tutte le prenotazioni</a></p>
     </div>
 
-    <!-- SEZIONE ADMIN (protetta da password) -->
     <div class="card admin" id="adminSection">
         <h2>🔐 Pannello Organizzatore</h2>
-        <input type="password" id="password" placeholder="Password admin (chiedila all'organizzatore)">
+        <input type="password" id="password" placeholder="Password admin"><br>
         <button onclick="accediAdmin()">ENTRA</button>
         <button onclick="nascondiAdmin()" style="background:#666;margin-top:10px;">Esci</button>
 
         <div id="listaPrenotazioni" style="margin-top:30px;"></div>
-        <button onclick="resettaTutto()" style="background:#ff0066;margin-top:20px;">🔥 RESETTA TUTTE LE PRENOTAZIONI (nuova serata)</button>
+        <button onclick="resettaTutto()" style="background:#ff0066;margin-top:20px;">🔥 RESETTA TUTTE LE PRENOTAZIONI</button>
     </div>
-
 </div>
 
-<footer>© 2025 GuardaroBa Prenotato – Il sito che salva le serate</footer>
+<footer>© 2025 GuardaroBa Prenotato</footer>
 
 <script>
-    // CONFIGURA QUI LA TUA PASSWORD ADMIN (cambiala subito!)
-    const PASSWORD_ADMIN = "discoteca2026";   // ←←← CAMBIA QUESTA!!!
+    const PASSWORD_ADMIN = "discoteca2025";  // ← CAMBIA QUESTA PASSWORD SUBITO!
 
     let numeriDisponibili = Array.from({length: 100}, (_, i) => String(i + 1).padStart(3, '0'));
     const prenotazioni = {};
 
-    // Carica prenotazioni salvate
     if (localStorage.getItem('prenotazioniGP')) {
         Object.assign(prenotazioni, JSON.parse(localStorage.getItem('prenotazioniGP')));
         numeriDisponibili = numeriDisponibili.filter(n => !prenotazioni[n]);
@@ -84,7 +77,7 @@
 
         if (!nome) { risultato.innerHTML = '<p style="color:#ff0066;">⚠️ Scrivi un nome!</p>'; return; }
         if (numeriDisponibili.length === 0) {
-            risultato.innerHTML = '<p style="color:#ff0066;font-size:2rem;">😭 SOLD OUT!<br>Tutti i 100 numeri sono già stati prenotati!</p>';
+            risultato.innerHTML = '<p style="color:#ff0066;font-size:2rem;">😭 SOLD OUT!</p>';
             return;
         }
 
@@ -100,40 +93,28 @@
         document.getElementById('nome').value = '';
     }
 
-    function mostraAdmin() {
-        document.getElementById('adminSection').style.display = 'block';
-        document.getElementById('pubblica').style.display = 'none';
-    }
-    function nascondiAdmin() {
-        document.getElementById('adminSection').style.display = 'none';
-        document.getElementById('pubblica').style.display = 'block';
-    }
+    function mostraAdmin() { document.getElementById('adminSection').style.display = 'block'; document.getElementById('pubblica').style.display = 'none'; }
+    function nascondiAdmin() { document.getElementById('adminSection').style.display = 'none'; document.getElementById('pubblica').style.display = 'block'; }
 
     function accediAdmin() {
-        const pw = document.getElementById('password').value;
-        if (pw === PASSWORD_ADMIN) {
-            mostraLista();
+        if (document.getElementById('password').value === PASSWORD_ADMIN) {
+            let html = `<h3>Prenotazioni (${100 - numeriDisponibili.length}/100)</h3><table><tr><th>Numero</th><th>Persona</th></tr>`;
+            for (const num of Object.keys(prenotazioni).sort()) {
+                html += `<tr><td><b>${num}</b></td><td>${prenotazioni[num]}</td></tr>`;
+            }
+            html += `</table><p>Posti rimasti: <b>${numeriDisponibili.length}</b></p>`;
+            document.getElementById('listaPrenotazioni').innerHTML = html;
         } else {
             alert("Password sbagliata!");
         }
     }
 
-    function mostraLista() {
-        let html = `<h3>Prenotazioni attive (${100 - numeriDisponibili.length}/100)</h3><table><tr><th>Numero</th><th>Persona</th></tr>`;
-        for (const num of Object.keys(prenotazioni).sort()) {
-            html += `<tr><td><b>${num}</b></td><td>${prenotazioni[num]}</td></tr>`;
-        }
-        html += `</table><p>Posti rimasti: <b>${numeriDisponibili.length}</b></p>`;
-        document.getElementById('listaPrenotazioni').innerHTML = html;
-    }
-
     function resettaTutto() {
-        if (confirm("Sei sicuro? Cancellerai TUTTE le prenotazioni!")) {
+        if (confirm("Sei sicuro? Cancella tutto!")) {
             localStorage.removeItem('prenotazioniGP');
             location.reload();
         }
     }
 </script>
 </body>
-
 </html>
