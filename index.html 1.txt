@@ -66,7 +66,7 @@
 
 <script>
     // CONFIGURA QUI LA TUA PASSWORD ADMIN (cambiala subito!)
-    const PASSWORD_ADMIN = "discoteca2025";   // ←←← CAMBIA QUESTA!!!
+    const PASSWORD_ADMIN = "discoteca2026";   // ←←← CAMBIA QUESTA!!!
 
     let numeriDisponibili = Array.from({length: 100}, (_, i) => String(i + 1).padStart(3, '0'));
     const prenotazioni = {};
@@ -135,4 +135,5 @@
     }
 </script>
 </body>
+
 </html>
