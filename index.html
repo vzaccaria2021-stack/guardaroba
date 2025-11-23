@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardaroBa Prenotato – Mai più guarda roba!</title>
+    <meta name="description" content="Prenota il tuo numero guardaroba online e vai dritto a ballare.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto&display=swap');
+        
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a0033, #000);
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 40px 20px;
+            background: rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        h1 span { color: #ff00aa; }
+        p.subtitle {
+            font-size: 1.4rem;
+            margin: 20px 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        input, button {
+            padding: 15px;
+            margin: 10px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+        }
+        input {
+            width: 80%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        input::placeholder { color: #ddd; }
+        button {
+            background: #ff00aa;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background: #ff55cc; transform: scale(1.05); }
+        .numeri {
+            margin-top: 40px;
+            font-size: 6rem;
+            font-weight: 800;
+            letter-spacing: 10px;
+            color: #ff00aa;
+        }
+        footer {
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .sold-out {
+            color: #ff0066;
+            font-size: 2rem;
+            margin: 30px;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .numeri { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Guardaro<span>Ba</span> Prenotato</h1>
+    <p class="subtitle">Prenota il tuo numero e vai dritto a ballare<br>Niente più “guarda roba” tutta la notte!</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <p>Inserisci il tuo nome (o nickname) e clicca “PRENOTA”</p>
+        <input type="text" id="nome" placeholder="es. Fra99, La Robi, Ciccio...">
+        <br>
+        <button onclick="prenota()">PRENOTA IL NUMERO</button>
+
+        <div id="risultato"></div>
+        <div id="numeroGrande" class="numeri" style="display:none;"></div>
+    </div>
+</div>
+
+<footer>
+    © 2025 GuardaroBa Prenotato – Il sito che salva le serate dal giubbotto-schiavitù
+</footer>
+
+<script>
+    // Simuliamo 100 numeri disponibili (da 001 a 100)
+    let numeriDisponibili = Array.from({length: 100}, (_, i) => String(i + 1).padStart(3, '0'));
+    const prenotazioni = {};
+
+    // Carica dal localStorage se già qualcuno ha prenotato oggi
+    if (localStorage.getItem('prenotazioni')) {
+        Object.assign(prenotazioni, JSON.parse(localStorage.getItem('prenotazioni')));
+        numeriDisponibili = numeriDisponibili.filter(n => !prenotazioni[n]);
+    }
+
+    function prenota() {
+        const nome = document.getElementById('nome').value.trim();
+        const risultato = document.getElementById('risultato');
+        const numeroGrande = document.getElementById('numeroGrande');
+
+        if (!nome) {
+            risultato.innerHTML = '<p style="color:#ff0066;">⚠️ Scrivi almeno un nome o nickname!</p>';
+            return;
+        }
+
+        if (numeriDisponibili.length === 0) {
+            risultato.innerHTML = '<p class="sold-out">😭 SOLD OUT!<br>Tutti i 100 numeri sono stati prenotati stasera!</p>';
+            numeroGrande.style.display = 'none';
+            return;
+        }
+
+        // Pesca un numero casuale
+        const indice = Math.floor(Math.random() * numeriDisponibili.length);
+        const numero = numeriDisponibili[indice];
+
+        // Registra la prenotazione
+        prenotazioni[numero] = nome;
+        numeriDisponibili.splice(indice, 1);
+
+        // Salva nel localStorage (dura finché non svuoti la cache)
+        localStorage.setItem('prenotazioni', JSON.stringify(prenotazioni));
+
+        // Mostra il risultato
+        risultato.innerHTML = `<p>Congratulazioni <b>${nome}</b>! 🎉</p><p>Il tuo numero guardaroba è:</p>`;
+        numeroGrande.textContent = numero;
+        numeroGrande.style.display = 'block';
+
+        document.getElementById('nome').value = '';
+    }
+</script>
+
+</body>
+</html>
