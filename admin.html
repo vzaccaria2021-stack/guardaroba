@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardaroBa Admin – Solo per te!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto&display=swap');
+        body {margin:0;font-family:'Roboto',sans-serif;background:linear-gradient(135deg,#1a0033,#000);color:#fff;text-align:center;min-height:100vh;display:flex;flex-direction:column;}
+        header{padding:40px 20px;background:rgba(0,0,0,0.5);}
+        h1{font-family:'Montserrat',sans-serif;font-size:3.5rem;margin:0;text-transform:uppercase;letter-spacing:3px;}
+        h1 span{color:#ff00aa;}
+        .container{max-width:800px;margin:40px auto;padding:0 20px;flex:1;}
+        .card{background:rgba(255,255,255,0.1);border-radius:20px;padding:40px 30px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.6);}
+        input,button{padding:15px;margin:10px;font-size:1.2rem;border:none;border-radius:50px;}
+        input{width:80%;background:rgba(255,255,255,0.2);color:white;}
+        input::placeholder{color:#ddd;}
+        button{background:#ff00aa;color:white;cursor:pointer;font-weight:bold;transition:0.3s;}
+        button:hover{background:#ff55cc;transform:scale(1.05);}
+        table{width:100%;margin-top:30px;border-collapse:collapse;}
+        th, td{padding:12px;border-bottom:1px solid rgba(255,255,255,0.2);text-align:left;}
+        th{background:#ff00aa;}
+        #lista{display:none;}
+        #reset{display:none;background:#ff0066;margin-top:20px;}
+        footer{padding:20px;font-size:0.9rem;opacity:0.7;}
+        @media(max-width:600px){h1{font-size:2.5rem;}}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🔐 Guardaro<span>Ba</span> Admin</h1>
+    <p style="font-size:1.4rem;">Pannello privato – Vedi e gestisci le prenotazioni</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <input type="password" id="password" placeholder="Inserisci password admin"><br>
+        <button onclick="accedi()">ENTRA</button>
+
+        <div id="lista"></div>
+        <button id="reset" onclick="resetta()">🔥 RESETTA TUTTE LE PRENOTAZIONI</button>
+    </div>
+</div>
+
+<footer>© 2025 GuardaroBa Prenotato – Solo per l'organizzatore</footer>
+
+<script>
+    const PASSWORD_ADMIN = "discoteca2025";  // ← CAMBIA QUESTA PASSWORD SE VUOI!
+
+    let numeriDisponibili = Array.from({length: 100}, (_, i) => String(i + 1).padStart(3, '0'));
+    const prenotazioni = {};
+
+    if (localStorage.getItem('prenotazioniGP')) {
+        Object.assign(prenotazioni, JSON.parse(localStorage.getItem('prenotazioniGP')));
+        numeriDisponibili = numeriDisponibili.filter(n => !prenotazioni[n]);
+    }
+
+    function accedi() {
+        if (document.getElementById('password').value === PASSWORD_ADMIN) {
+            mostraLista();
+            document.getElementById('lista').style.display = 'block';
+            document.getElementById('reset').style.display = 'inline-block';
+            document.getElementById('password').style.display = 'none';
+            document.querySelector('button[onclick="accedi()"]').style.display = 'none';
+        } else {
+            alert("❌ Password sbagliata! Prova di nuovo.");
+        }
+    }
+
+    function mostraLista() {
+        let html = `<h3>Prenotazioni attive (${Object.keys(prenotazioni).length}/100)</h3><table><tr><th>Numero</th><th>Persona</th></tr>`;
+        for (const num of Object.keys(prenotazioni).sort()) {
+            html += `<tr><td><b>${num}</b></td><td>${prenotazioni[num]}</td></tr>`;
+        }
+        if (Object.keys(prenotazioni).length === 0) {
+            html += `<tr><td colspan="2">Nessuna prenotazione ancora! 😴</td></tr>`;
+        }
+        html += `</table><p style="font-size:1.5rem;">Posti rimasti: <b>${numeriDisponibili.length}</b>/100</p>`;
+        document.getElementById('lista').innerHTML = html;
+    }
+
+    function resetta() {
+        if (confirm("🚨 Sei sicuro? Cancellerai TUTTE le prenotazioni per la prossima serata!")) {
+            localStorage.removeItem('prenotazioniGP');
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
